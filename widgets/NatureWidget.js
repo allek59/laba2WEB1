@@ -1,0 +1,6 @@
+import {ApiWidget} from './ApiWidget.js';
+export class NatureWidget extends ApiWidget {
+ constructor(id,remove,change){super(id,'🍄 Лесной справочник · iNaturalist',remove,change);}
+ async fetchData(signal){const data=await this.getJSON('https://api.inaturalist.org/v1/taxa/autocomplete?q='+encodeURIComponent('Amanita')+'&per_page=5',signal);if(!Array.isArray(data.results))throw Error('Неожиданный формат ответа');return data.results;}
+ showData(items){if(!items.length){this.body.textContent='Виды не найдены';return;}const intro=document.createElement('p');intro.className='muted';intro.textContent='Грибы рода Amanita — природные референсы для сказочного леса. Не руководство по сбору или употреблению.';this.body.append(intro);for(const item of items){const row=document.createElement('div');row.className='api-entry';const a=document.createElement('a');a.textContent=item.preferred_common_name||item.name||'Вид';a.href='https://www.inaturalist.org/taxa/'+encodeURIComponent(item.id);a.target='_blank';a.rel='noopener noreferrer';const small=document.createElement('small');small.textContent=item.name||'';row.append(a,small);this.body.append(row);}const source=document.createElement('small');source.className='muted';source.textContent='Источник: iNaturalist · живой запрос';this.body.append(source);}
+}
